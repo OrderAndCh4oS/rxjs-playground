@@ -1,32 +1,30 @@
-import {Observable} from 'rxjs/Rx';
+import { Observable } from 'rxjs/Rx';
 
-function ajax() {
+function ajax () {
     const root = document.createElement('div');
 
     root.innerHTML = 'Loading...';
 
     Observable.ajax({
-        url: 'http://blog-sym.dev/api/tasks.json',
+        url: 'http://todo.dev/api/todos.json',
         crossDomain: true,
-    })
-        .map(e => e.response)
-        .subscribe(data => {
-            root.innerHTML = '';
-            const simpleResponse = JSON.parse(JSON.stringify(data, null, 2));
-            for(let r of simpleResponse) {
-                const task = document.createElement('div'),
-                title = document.createElement('h2'),
-                description = document.createElement('p'),
-                completed = document.createElement('p');
-                title.innerHTML = r.name;
-                description.innerHTML = r.description;
-                completed.innerHTML = r.isComplete ? 'complete' : 'not complete';
-                task.appendChild(title);
-                task.appendChild(description);
-                task.appendChild(completed);
-                root.appendChild(task);
-            }
-        });
+    }).map(e => e.response).subscribe(data => {
+        const todos = document.createElement('div');
+        todos.innerHTML = '';
+        const simpleResponse = JSON.parse(JSON.stringify(data, null, 2));
+        for (let r of simpleResponse) {
+            const isComplete = r.isComplete ? 'complete' : 'not complete';
+            todos.innerHTML += `
+                <div class="todo">
+                    <h2>${r.title}</h2>
+                    <p>${r.description}</p>
+                    <p>${isComplete}</p>
+                </div>
+               `;
+        }
+        root.innerHTML = '';
+        root.appendChild(todos)
+    });
 
     return root;
 }
